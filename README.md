@@ -1,8 +1,8 @@
 # <project title>
 
 ## Authors
-Group <group number> : 
-- <first and last name> (<UTS student id>)
+Group 14 : 
+- Tarun Krishnan (24697928)
 - <first and last name> (<UTS student id>)
 - <first and last name> (<UTS student id>)
 

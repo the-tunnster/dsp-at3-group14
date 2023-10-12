@@ -35,275 +35,247 @@ class Dataset:
         self.table = None
 
     def set_data(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_data (method): Class method that computes all requested information from self.df to be displayed in the Dataframe tab of Streamlit app 
+        if self.df is None:
+            raise ValueError("No dataframe loaded. Use `load_data` method to load the dataframe first.")
 
-        --------------------
-        Parameters
-        --------------------
-        -> None
+        # Update the columns list
+        self.cols_list = self.df.columns.tolist()
 
-        --------------------
-        Returns
-        --------------------
-        -> None
-        """
+        # Update the number of rows and columns
+        self.n_rows = len(self.df)
+        self.n_cols = len(self.cols_list)
+
+        # Compute the number of duplicated rows
+        self.n_duplicates = self.df.duplicated().sum()
+
+        # Compute the number of missing values in the dataframe
+        self.n_missing = self.df.isnull().sum().sum()
+
+        # Compute the number of numeric columns
+        self.n_num_cols = self.df.select_dtypes(include=["number"]).shape[1]
+
+        # Compute the number of text columns
+        self.n_text_cols = self.df.select_dtypes(exclude=["number"]).shape[1]
+
+        # Update the table with column information
+        self.create_table()
         
         
     def set_df(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_df (method): Class method that will load the uploaded CSV file as Pandas DataFrame and store it as attribute (self.df) if it hasn't been provided before.
+        if self.df is not None:
+            print("Dataframe already loaded.")
+            return
 
-        --------------------
-        Parameters
-        --------------------
-        -> None
+        try:
+            self.df = pd.read_csv(self.file_path)
+            print("Dataframe loaded successfully from", self.file_path)
+        except FileNotFoundError:
+            print(f"Error: File {self.file_path} not found.")
+        except Exception as e:
+            print(f"An error occurred while loading the dataframe: {e}")
 
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
 
     def is_df_none(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> is_df_none (method): Class method that checks if self.df is empty or none 
+        if self.df is None:
+            return True
+        
+        if self.df.empty:
+            return True
 
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> (bool): Flag stating if self.df is empty or not
-
-        """
+        return False
         
 
     def set_columns(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> set_columns (method): Class method that extract the list of columns names and store the results in the relevant attribute (self.cols_list) if self.df is not empty nor None 
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
+        Extracts the list of columns names from self.df and stores the results in the relevant attribute (self.cols_list) if self.df is not empty nor None.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to extract columns.")
+            return
+
+        self.cols_list = self.df.columns.tolist()
+        print("Columns extracted and stored in self.cols_list.")
         
 
     def set_dimensions(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> set_dimensions (method): Class method that computes the dimensions (number of columns and rows) of self.df  and store the results in the relevant attributes (self.n_rows, self.n_cols) if self.df is not empty nor None 
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
+        Computes the dimensions (number of columns and rows) of self.df and stores the results in the relevant attributes (self.n_rows, self.n_cols) if self.df is not empty nor None.
         """
-        
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to compute dimensions.")
+            return
+
+        self.n_rows, self.n_cols = self.df.shape
+        print(f"Dimensions computed. Rows: {self.n_rows}, Columns: {self.n_cols}.")
+
+            
 
     def set_duplicates(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> set_duplicates (method): Class method that computes the number of duplicated of self.df and store the results in the relevant attribute (self.n_duplicates) if self.df is not empty nor None 
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
+        Computes the number of duplicated rows in self.df and stores the result in the relevant attribute (self.n_duplicates) if self.df is not empty nor None.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to compute number of duplicates.")
+            return
+
+        self.n_duplicates = self.df.duplicated().sum()
+        print(f"Number of duplicated rows computed: {self.n_duplicates}.")
+
         
 
     def set_missing(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> set_missing (method): Class method that computes the number of missing values of self.df and store the results in the relevant attribute (self.n_missing) if self.df is not empty nor None 
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
+        Computes the number of missing values in self.df and stores the result in the relevant attribute (self.n_missing) if self.df is not empty nor None.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to compute number of missing values.")
+            return
+
+        self.n_missing = self.df.isnull().sum().sum()
+        print(f"Number of missing values computed: {self.n_missing}.")
+
         
 
     def set_numeric(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> set_numeric (method): Class method that computes the number of columns that are numeric type and store the results in the relevant attribute (self.n_num_cols) if self.df is not empty nor None 
-        
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
+        Computes the number of columns that are numeric type in self.df and stores the result in the relevant attribute (self.n_num_cols) if self.df is not empty nor None.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to compute number of numeric columns.")
+            return
+
+        self.n_num_cols = self.df.select_dtypes(include=['number']).shape[1]
+        print(f"Number of numeric columns computed: {self.n_num_cols}.")
+
         
 
     def set_text(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> set_text (method): Class method that computes the number of columns that are text type and store the results in the relevant attribute (self.n_text_cols) if self.df is not empty nor None 
-        
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
+        Computes the number of columns that are text type in self.df and stores the result in the relevant attribute (self.n_text_cols) if self.df is not empty nor None.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to compute number of text columns.")
+            return
+
+        self.n_text_cols = self.df.select_dtypes(include=['object']).shape[1]
+        print(f"Number of text columns computed: {self.n_text_cols}.")
+
         
 
     def get_head(self, n=5):
         """
-        --------------------
-        Description
-        --------------------
-        -> get_head (method): Class method that computes the first rows of self.df according to the provided number of rows specified as parameter (default: 5) if self.df is not empty nor None
+        Computes the first rows of self.df according to the provided number of rows specified as parameter (default: 5) if self.df is not empty nor None.
 
-        --------------------
-        Parameters
-        --------------------
-        -> n (int): Number of rows to be returned
+        Parameters:
+        n (int): Number of rows to be returned. Default is 5.
 
-        --------------------
-        Returns
-        --------------------
-        -> (Pandas.DataFrame): First rows of dataframe
-
+        Returns:
+        pd.DataFrame: First 'n' rows of self.df.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to retrieve first rows.")
+            return pd.DataFrame()  # Return empty dataframe as a fallback
+
+        return self.df.head(n)
+
         
 
     def get_tail(self, n=5):
         """
-        --------------------
-        Description
-        --------------------
-        -> get_tail (method): Class method that computes the last rows of self.df according to the provided number of rows specified as parameter (default: 5) if self.df is not empty nor None
+        Computes the last rows of self.df according to the provided number of rows specified as parameter (default: 5) if self.df is not empty nor None.
 
-        --------------------
-        Parameters
-        --------------------
-        -> n (int): Number of rows to be returned
+        Parameters:
+        n (int): Number of rows to be returned. Default is 5.
 
-        --------------------
-        Returns
-        --------------------
-        -> (Pandas.DataFrame): Last rows of dataframe
-
+        Returns:
+        pd.DataFrame: Last 'n' rows of self.df.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to retrieve last rows.")
+            return pd.DataFrame()  # Return empty dataframe as a fallback
+
+        return self.df.tail(n)
+
         
 
     def get_sample(self, n=5):
         """
-        --------------------
-        Description
-        --------------------
-        -> get_sample (method): Class method that computes a random sample of rows of self.df according to the provided number of rows specified as parameter (default: 5) if self.df is not empty nor None
+        Computes a random sample of rows from self.df according to the provided number of rows specified as parameter (default: 5) if self.df is not empty nor None.
 
-        --------------------
-        Parameters
-        --------------------
-        -> n (int): Number of rows to be returned
+        Parameters:
+        n (int): Number of rows to be sampled. Default is 5.
 
-        --------------------
-        Returns
-        --------------------
-        -> (Pandas.DataFrame): Sampled dataframe
-
+        Returns:
+        pd.DataFrame: Random 'n' rows sample from self.df.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to retrieve a sample.")
+            return pd.DataFrame()  # Return empty dataframe as a fallback
+
+        return self.df.sample(n)
+
         
 
 
     def set_table(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> set_table (method): Class method that computes the Dataframe containing the list of columns with their data types and memory usage and store the results in the relevant attribute (self.table) if self.df is not empty nor None
+        Computes a DataFrame containing the list of columns with their data types and memory usage. The result is stored in the attribute (self.table) if self.df is not empty nor None.
 
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
+        Returns:
+        None
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to compute the table.")
+            return
+
+        data_types = self.df.dtypes
+        memory_usage = self.df.memory_usage(deep=True)
+
+        self.table = pd.DataFrame({
+            "Column Name": self.df.columns,
+            "Data Type": data_types,
+            "Memory Usage (Bytes)": memory_usage
+        }).reset_index(drop=True)
+
+        print("Table computed and stored in self.table.")
+
 
 
     def get_summary(self):
         """
-        --------------------
-        Description
-        --------------------
-        -> get_summary_df (method): Class method that formats all requested information from self.df to be displayed in the Dataframe tab of Streamlit app as a Pandas dataframe with 2 columns: Description and Value
+        Formats all requested information from self.df to be displayed in the Dataframe tab of Streamlit app as a Pandas dataframe with 2 columns: Description and Value.
 
-        --------------------
-        Returns
-        --------------------
-        -> (pd.DataFrame): Formatted dataframe to be displayed on the Streamlit app
-
+        Returns:
+        pd.DataFrame: Formatted dataframe to be displayed on the Streamlit app.
         """
+        if self.is_df_none():
+            print("self.df is None or empty. Unable to compute the summary.")
+            return pd.DataFrame(columns=["Description", "Value"])
+
+        # Gather the data in lists
+        descriptions = [
+            "Number of Rows",
+            "Number of Columns",
+            "Number of Duplicated Rows",
+            "Number of Missing Values",
+            "Number of Numeric Columns",
+            "Number of Text Columns"
+        ]
+        values = [
+            self.n_rows,
+            self.n_cols,
+            self.n_duplicates,
+            self.n_missing,
+            self.n_num_cols,
+            self.n_text_cols
+        ]
+
+        # Convert to DataFrame
+        summary_df = pd.DataFrame({
+            "Description": descriptions,
+            "Value": values
+        })
+
+        return summary_df
+
