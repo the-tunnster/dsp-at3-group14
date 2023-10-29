@@ -218,7 +218,7 @@ class Dataset:
         
 
 
-    def set_table(self):
+    def create_table(self):
         """
         Computes a DataFrame containing the list of columns with their data types and memory usage. The result is stored in the attribute (self.table) if self.df is not empty nor None.
 
@@ -233,10 +233,10 @@ class Dataset:
         memory_usage = self.df.memory_usage(deep=True)
 
         self.table = pd.DataFrame({
-            "Column Name": self.df.columns,
-            "Data Type": data_types,
-            "Memory Usage (Bytes)": memory_usage
-        }).reset_index(drop=True)
+			"Column Name": list(self.df.columns) + [''],
+			"Data Type": data_types,
+			"Memory Usage (Bytes)": memory_usage
+		}).reset_index(drop=True)
 
         print("Table computed and stored in self.table.")
 
