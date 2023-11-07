@@ -1,17 +1,20 @@
 import streamlit as st
 from tab_df.logics import Dataset
 
+
 def display_tab_df_content(file_path):
     # Instantiate Dataset class and save it in Streamlit session state
     dataset = Dataset(file_path)
-    if "dataset" not in st.session_state:
+    
+    if st.session_state.dataset is None:
         st.session_state.dataset = dataset
 
     # Compute all the information to be displayed
+    st.session_state.dataset.set_df()
     st.session_state.dataset.set_data()
 
     # First Streamlit Expander container
-    with st.expander("Dataset Summary"):
+    with st.expander("Dataframe Summary"):
         # Display the summary as a Streamlit table
         st.table(st.session_state.dataset.get_summary())
         
@@ -19,7 +22,7 @@ def display_tab_df_content(file_path):
         st.write(st.session_state.dataset.table)
 
     # Second Streamlit Expander container
-    with st.expander("View Data"):
+    with st.expander("Explore Dataframe"):
         # Slider to select the number of rows
         n_rows = st.slider("Select number of rows to display:", 1, 100, 5)
         
