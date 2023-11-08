@@ -236,7 +236,7 @@ class Dataset:
 			"Column Name": list(self.df.columns) + [''],
 			"Data Type": data_types,
 			"Memory Usage (Bytes)": memory_usage
-		}).reset_index(drop=True)
+		}).reset_index(drop=True).astype(str)
 
         print("Table computed and stored in self.table.")
 

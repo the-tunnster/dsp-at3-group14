@@ -4,7 +4,7 @@ from tab_df.logics import Dataset
 
 def display_tab_df_content(file_path):
     # Instantiate Dataset class and save it in Streamlit session state
-    dataset = Dataset(file_path)
+    dataset = Dataset(file_path=file_path)
     
     if st.session_state.dataset is None:
         st.session_state.dataset = dataset
