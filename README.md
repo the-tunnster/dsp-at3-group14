@@ -4,8 +4,8 @@
 Group 14 : 
 - Tarun Krishnan (24697928)
 - Muhsin Dawood  (24897124)
-- <first and last name> (<UTS student id>)
-- <first and last name> (<UTS student id>)
+- Phillip White-Wall (10826612)
+- Abel Varghese (24712198)
 
 ## Description
 The application aims to provide a front end web exploration interface for datasets that will be used in various data science applications.  
