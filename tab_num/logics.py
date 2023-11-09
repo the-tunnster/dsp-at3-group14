@@ -1,5 +1,6 @@
 import pandas as pd
 import altair as alt
+import streamlit as st
 
 
 class NumericColumn:
@@ -47,321 +48,130 @@ class NumericColumn:
         self.frequent = pd.DataFrame(columns=['value', 'occurrence', 'percentage'])
 
     def find_num_cols(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> find_num_cols (method): Class method that will load the uploaded CSV file as Pandas DataFrame and store it as attribute (self.df) if it hasn't been provided before.
-        Then it will find all columns of numeric data type and store the results in the relevant attribute (self.cols_list).
 
-        --------------------
-        Parameters
-        --------------------
-        -> None
+        if self.df is None:
+            # Load the uploaded CSV file into a Pandas DataFrame
+            # You can use streamlit's file_uploader for this
+            uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+            if uploaded_file:
+                self.df = pd.read_csv(uploaded_file)
 
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
-        
+        # Find columns of numeric data type
+        if self.df is not None:
+            numeric_columns = self.df.select_dtypes(include=['float64', 'int64']).columns
+            self.cols_list = list(numeric_columns)
 
     def set_data(self, col_name):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_data (method): Class method that sets the self.serie attribute with the relevant column from the dataframe and then computes all requested information from self.serie to be displayed in the Numeric section of Streamlit app 
+        
+        if self.df is not None and col_name in self.cols_list:
+            self.serie = self.df[col_name]
 
-        --------------------
-        Parameters
-        --------------------
-        -> col_name (str): Name of the numeric column to be analysed
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
+            # Compute requested information from self.serie
+            self.n_unique = self.serie.nunique()
+            self.n_missing = self.serie.isna().sum()
+            self.col_mean = self.serie.mean()
+            self.col_std = self.serie.std()
+            self.col_min = self.serie.min()
+            self.col_max = self.serie.max()
+            self.col_median = self.serie.median()
+            self.n_zeros = (self.serie == 0).sum()
+            self.n_negatives = (self.serie < 0).sum()
 
     def convert_serie_to_num(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> convert_serie_to_num (method): Class method that convert a Pandas Series to numeric data type and store the results in the relevant attribute (self.serie).
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
+        if self.serie is not None:
+            # Attempt to convert the series to numeric type
+            try:
+                self.serie = pd.to_numeric(self.serie, errors='coerce')
+            except ValueError:
+                st.warning("Conversion to numeric type failed. Check the data in the series.")
 
     def is_serie_none(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> is_serie_none (method): Class method that checks if self.serie is empty or none and store the results in the relevant attribute (self.cols_list) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> (bool): Flag stating if the serie is empty or not
-
-        """
         
+        if self.serie is not None and not self.serie.empty:
+            return False
+        else:
+            return True
 
     def set_unique(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_unique (method): Class method that computes the number of unique value of a column and store the results in the relevant attribute (self.n_unique) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
+        if self.serie is not None and not self.serie.empty:
+            self.n_unique = self.serie.nunique()
 
     def set_missing(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_missing (method): Class method that computes the number of missing value of a serie and store the results in the relevant attribute (self.n_missing) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
-        
+       
+        if self.serie is not None and not self.serie.empty:
+            self.n_missing = self.serie.isna().sum()  
 
     def set_zeros(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_zeros (method): Class method that computes the number of times a serie has values equal to 0 and store the results in the relevant attribute (self.n_zeros) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
-
+        if self.serie is not None and not self.serie.empty:
+            self.n_zeros = (self.serie == 0).sum()
+        
     def set_negatives(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_negatives (method): Class method that computes the number of times a serie has negative values and store the results in the relevant attribute (self.n_negatives) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
-        
+       
+        if self.serie is not None and not self.serie.empty:
+            self.n_negatives = (self.serie < 0).sum()   
 
     def set_mean(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_mean (method): Class method that computes the average value of a serie and store the results in the relevant attribute (self.col_mean) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
+        if self.serie is not None and not self.serie.empty:
+            self.col_mean = self.serie.mean()    
 
     def set_std(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_std (method): Class method that computes the standard deviation value of a serie and store the results in the relevant attribute (self.col_std) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
+        if self.serie is not None and not self.serie.empty:
+            self.col_std = self.serie.std()  
     
     def set_min(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_min (method): Class method that computes the minimum value of a serie and store the results in the relevant attribute (self.col_min) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
-        
+       
+        if self.serie is not None and not self.serie.empty:
+            self.col_min = self.serie.min() 
 
     def set_max(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_max (method): Class method that computes the maximum value of a serie and store the results in the relevant attribute (self.col_max) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
-        
+       
+        if self.serie is not None and not self.serie.empty:
+            self.col_max = self.serie.max()  
 
     def set_median(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_median (method): Class method that computes the median value of a serie and store the results in the relevant attribute (self.col_median) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
+        if self.serie is not None and not self.serie.empty:
+            self.col_median = self.serie.median()
 
     def set_histogram(self):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_histogram (method): Class method that computes the Altair histogram displaying the count for each bin value of a serie and store the results in the relevant attribute (self.histogram) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
         
+        if self.serie is not None and not self.serie.empty:
+            chart = alt.Chart(self.df).mark_bar().encode(
+                alt.X(f"{self.serie.name}:Q", bin=alt.Bin(maxbins=20)),
+                y="count()",
+            ).properties(
+                width=600,
+                height=400
+            )
+            self.histogram = chart
 
     def set_frequent(self, end=20):
-        """
-        --------------------
-        Description
-        --------------------
-        -> set_frequent (method): Class method that computes the Dataframe containing the most frequest value of a serie and store the results in the relevant attribute (self.frequent) if self.serie is not empty nor None
-
-        --------------------
-        Parameters
-        --------------------
-        -> end (int):
-            Parameter indicating the maximum number of values to be displayed
-
-        --------------------
-        Returns
-        --------------------
-        -> None
-
-        """
+        
+        if self.serie is not None and not self.serie.empty:
+            frequent_values = self.serie.value_counts().reset_index()
+            frequent_values.columns = ["value", "occurrence"]
+            frequent_values["percentage"] = (frequent_values["occurrence"] / len(self.serie)) * 100
+            self.frequent = frequent_values.head(end)
         
     def get_summary(self,):
-        """
-        --------------------
-        Description
-        --------------------
-        -> get_summary_df (method): Class method that formats all requested information from self.serie to be displayed in the Overall section of Streamlit app as a Pandas dataframe with 2 columns: Description and Value
-
-        --------------------
-        Parameters
-        --------------------
-        -> None
-
-        --------------------
-        Returns
-        --------------------
-        -> (pd.DataFrame): Formatted dataframe to be displayed on the Streamlit app
-
-        """
         
+        if self.serie is not None and not self.serie.empty:
+            summary_df = pd.DataFrame({
+                "Description": ["Number of Unique Values", "Number of Missing Values", "Average Value",
+                                "Standard Deviation", "Minimum Value", "Maximum Value", "Median Value",
+                                "Number of Zeros", "Number of Negatives"],
+                "Value": [self.n_unique, self.n_missing, self.col_mean, self.col_std, self.col_min,
+                          self.col_max, self.col_median, self.n_zeros, self.n_negatives]
+            })
+
+            # Format the numeric values in the summary table as two decimal places
+            summary_df["Value"] = summary_df["Value"].apply(lambda x: f"{x:.2f}")
+            
+
+        return summary_df
+
