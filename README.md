@@ -20,7 +20,7 @@ A few features we could add going forward would be to include more graphs and me
 The first step is to ensure you have python installed and running.
 You also need to install a package manager, and we have used pip3 for this project.
 
-The version for the python runtime is Python 3.9
+The version for the python runtime is Python 3.9.18
 
 After doing this, we can create and populate the project files into a working directory.
 
