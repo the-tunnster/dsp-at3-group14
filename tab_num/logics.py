@@ -48,7 +48,10 @@ class NumericColumn:
         self.frequent = pd.DataFrame(columns=['value', 'occurrence', 'percentage'])
 
     def find_num_cols(self):
-
+        
+        """
+        This function will find all the numeric columns in the CSV file
+        """
         if self.df is None:
             # Load the uploaded CSV file into a Pandas DataFrame
             # You can use streamlit's file_uploader for this
@@ -94,11 +97,16 @@ class NumericColumn:
             return True
 
     def set_unique(self):
-        
+        """
+        Computes all the unique values in the column
+        """
         if self.serie is not None and not self.serie.empty:
             self.n_unique = self.serie.nunique()
 
     def set_missing(self):
+        """
+        Computes all the missing values in the column
+        """
        
         if self.serie is not None and not self.serie.empty:
             self.n_missing = self.serie.isna().sum()  
@@ -109,36 +117,57 @@ class NumericColumn:
             self.n_zeros = (self.serie == 0).sum()
         
     def set_negatives(self):
+        """
+        Computes all the negative values in the column
+        """
        
         if self.serie is not None and not self.serie.empty:
             self.n_negatives = (self.serie < 0).sum()   
 
     def set_mean(self):
+        """
+        Computes the average of the values in the column
+        """
         
         if self.serie is not None and not self.serie.empty:
             self.col_mean = self.serie.mean()    
 
     def set_std(self):
+        """
+        Computes the standard deviation of the values in the column
+        """
         
         if self.serie is not None and not self.serie.empty:
             self.col_std = self.serie.std()  
     
     def set_min(self):
-       
+        """
+        Computes the minimum value of the column
+        """
         if self.serie is not None and not self.serie.empty:
             self.col_min = self.serie.min() 
 
     def set_max(self):
+        """
+        Computes the maximum value of the column
+        """
        
         if self.serie is not None and not self.serie.empty:
             self.col_max = self.serie.max()  
 
     def set_median(self):
+        """
+        Computes the median value of the column
+        """
         
         if self.serie is not None and not self.serie.empty:
             self.col_median = self.serie.median()
 
     def set_histogram(self):
+        
+        """
+        Computes and bins the column into a histogram chart
+        """
         
         if self.serie is not None and not self.serie.empty:
             chart = alt.Chart(self.df).mark_bar().encode(

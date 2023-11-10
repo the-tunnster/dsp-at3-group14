@@ -2,7 +2,6 @@ import streamlit as st
 from tab_num.logics import NumericColumn
 
 def display_tab_num_content(file_path=None, df=None):
-    st.title("Numeric Columns Analysis")
 
     # Instantiate the NumericColumn class based on file_path or df
     if file_path:
